@@ -321,12 +321,10 @@ public class DanePax extends javax.swing.JFrame {
             Logger.getLogger(DanePax.class.getName()).log(Level.SEVERE, null, ex);
         }
             //wstawienie danych do tablict pasazer_dane
-            System.out.println("1");
             PreparedStatement ps;
             String query="INSERT INTO pasazer_dane(id_pasazer,imie,nazwisko ,kraj,miasto,ulica,nr_domu ,plec ) values (?,?,?,?,?,?,?,?)";
             try{
                 ps=ConnectionDB.getConnect().prepareStatement(query);
-                System.out.println("2");
                 ps.setInt(1,id_pax);
                 ps.setString(2, imie);
                 ps.setString(3, nazwisko);
@@ -335,16 +333,13 @@ public class DanePax extends javax.swing.JFrame {
                 ps.setString(6, ulica);
                 ps.setInt(7, dom); 
                 ps.setString(8, sex);
-                System.out.println("3");
                 if(ps.executeUpdate()>0){
                     JOptionPane.showMessageDialog(null, "Dane poprawnie dodane");
                     this.dispose();
-                    System.out.println("4a");
                     
                 }
                 else{
                     JOptionPane.showMessageDialog(null, "Wprowadz poprawne dane");
-                    System.out.println("4b");
                 }
             }
             catch(SQLException e){
