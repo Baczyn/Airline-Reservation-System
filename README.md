@@ -1,6 +1,6 @@
 # Airline-Reservation-System
 Projekt zrealizoway w ramach przedmiotu Bazy Danych I.
-##Zawartość
+## Zawartość
 1.	Folder src: Pliki źródłowe 
 2.	Folder docs: Dokumentacja wygenerowana przez javadocs 
 3.  Folder sql: pliki .sql tworzące tabele itp.
