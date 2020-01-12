@@ -190,6 +190,7 @@ public class Register extends javax.swing.JFrame {
                 //sprawdzenie czy użytkownik jest już w bazie
                 if(ps.executeUpdate()>0){
                     JOptionPane.showMessageDialog(null, "Użytkownik Dodany");
+                    this.dispose();
                 }
                 else{
                     JOptionPane.showMessageDialog(null, "Użytkownik juz istnieje");
