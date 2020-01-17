@@ -121,6 +121,7 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jPanel4.add(new JLabel(new ImageIcon("logosamolotu.jpg")));
         jLabel2 = new javax.swing.JLabel();
+        button_Usun = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -183,17 +184,18 @@ public class MainWindow extends javax.swing.JFrame {
 
         jListDo.setBackground(new java.awt.Color(141, 140, 154));
         jListDo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jListDo.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Wszystkie" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
         jScrollPane1.setViewportView(jListDo);
 
         jPanel2.add(jScrollPane1);
         jScrollPane1.setBounds(230, 100, 170, 30);
 
         jListLinia.setBackground(new java.awt.Color(141, 140, 154));
-        jListLinia.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Wszystkie" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
+
         jListLinia.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         jScrollPane2.setViewportView(jListLinia);
 
@@ -276,24 +278,40 @@ public class MainWindow extends javax.swing.JFrame {
         jListLoty.setSelectedIndex(1);
         jScrollPane3.setViewportView(jListLoty);
 
+        button_Usun.setBackground(new java.awt.Color(126, 175, 229));
+        button_Usun.setText("Usuń lot");
+
+        button_Usun.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_UsunActionPerformed(evt);
+            }
+        });
+
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addComponent(jButton_allpax, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton_allpax, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+                    .addComponent(button_Usun, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(113, Short.MAX_VALUE))
+                .addContainerGap(95, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton_allpax))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addComponent(jButton_allpax)
+                .addGap(1, 1, 1)
+                .addComponent(button_Usun, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         jPanel2.add(jPanel5);
@@ -397,20 +415,33 @@ public class MainWindow extends javax.swing.JFrame {
     private void jListSkadMouseClicked(java.awt.event.MouseEvent evt) {
         
         if(flagskad==true){
-        PreparedStatement ps;
-        ResultSet rs;
-        String query = "Select Distinct miasto_z, miasto_do FROM szukaj;";
+        PreparedStatement ps1;
+        ResultSet rs1;
+        String query1 = "Select Distinct miasto_z FROM szukaj;";
+
+        PreparedStatement ps2;
+        ResultSet rs2;
+        String query2 = "Select Distinct miasto_do FROM szukaj;";
+        
         //tablica trzymajaca wszystkie lotniska skąd coś wylatuje
         ArrayList<String> arrSkad = new ArrayList<String>();
         //tablica trzymajaca wszystkie lotniska dokąd coś leci
         ArrayList<String> arrDo = new ArrayList<String>();
         try {
-            ps=ConnectionDB.getConnect().prepareStatement(query);           
-            rs = ps.executeQuery();
-            while(rs.next()){
-               arrSkad.add(rs.getString(1));
-               arrDo.add(rs.getString(2));
+            ps1=ConnectionDB.getConnect().prepareStatement(query1);           
+            rs1 = ps1.executeQuery();
+            while(rs1.next()){
+               arrSkad.add(rs1.getString(1));
             }
+            ps2=ConnectionDB.getConnect().prepareStatement(query2);           
+            rs2 = ps2.executeQuery();
+            while(rs2.next()){
+               arrDo.add(rs2.getString(1));
+            }
+            arrDo.add("Wszystkie");
+
+
+
             DefaultListModel<String> model1 = new DefaultListModel<>();
             jListSkad.setModel(model1);
             DefaultListModel<String> model2 = new DefaultListModel<>();
@@ -434,7 +465,7 @@ public class MainWindow extends javax.swing.JFrame {
         String cel = jListDo.getSelectedValue();
         String linia = jListLinia.getSelectedValue();
   
-        if(linia==null || skad==null||cel==null){
+        if(linia==null || skad==null){
            JOptionPane.showMessageDialog(null, "Wybierz wszystkie pola");
         }
         else{
@@ -444,10 +475,27 @@ public class MainWindow extends javax.swing.JFrame {
             search.setLocationRelativeTo(null);
             String query;
             boolean flag=false;
-            if(linia.equals("Wszystkie"))
-                query="select Distinct * from szukaj WHERE miasto_z=? AND miasto_do=?;";
+            boolean flag2=false;
+            if(linia.equals("Wszystkie")){
+                if(cel==null|| cel.equals("Wszystkie")){
+                    query="select Distinct * from szukaj WHERE miasto_z=?;";
+                }
+                else{
+                    query="select Distinct * from szukaj WHERE miasto_z=? AND miasto_do=?;";
+                    flag2=true;
+                    }
+            }
+
             else{
-                query="select Distinct * from szukaj WHERE miasto_z=? AND miasto_do=? AND linia=?;";
+            
+                if(cel==null|| cel.equals("Wszystkie")){
+                    query="select Distinct * from szukaj WHERE miasto_z=?AND linia=?;";
+               }
+               else{
+                   query="select Distinct * from szukaj WHERE miasto_z=? AND miasto_do=? AND linia=?;";
+                   flag2=true;
+               }
+                
                 flag=true;
             }
         //tablica trzymająca informacje o dostepnych lotach
@@ -461,7 +509,7 @@ public class MainWindow extends javax.swing.JFrame {
         try {
             ps=ConnectionDB.getConnect().prepareStatement(query); 
             ps.setString(1,skad);
-            ps.setString(2, cel);
+           if(flag2) ps.setString(2, cel);
             if(flag) ps.setString(3, linia);
             
             rs = ps.executeQuery();
@@ -559,6 +607,39 @@ public class MainWindow extends javax.swing.JFrame {
        
     }
 
+
+    private void button_UsunActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        String lot = jListLoty.getSelectedValue();
+        if(lot!=null){
+            PreparedStatement ps;
+            ResultSet rs;
+            String query = "select * from usun_lot(?);";
+      
+            try {
+                ps=ConnectionDB.getConnect().prepareStatement(query);
+                ps.setInt(1, Integer.parseInt(lot));
+                
+                rs = ps.executeQuery();
+                while(rs.next()){
+                    if(rs.getInt(1)>0){
+                        JOptionPane.showMessageDialog(null, "Lot został usunięty"); 
+                        show_loty();
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null, "Błąd podczas usuwania"); 
+                    }
+                
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        }
+        else{
+        JOptionPane.showMessageDialog(null, "Wybierz lot do usunięcia");
+        }
+    }              
+
     public static void main(String args[]) {
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -617,5 +698,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JButton button_Usun;
     // koniec deklaracji zmiennych
 }
