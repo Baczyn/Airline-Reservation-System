@@ -1,7 +1,14 @@
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -9,15 +16,19 @@ import javax.swing.table.DefaultTableModel;
  * @author Mikolaj Baczynski
  */
 public class Manage extends javax.swing.JFrame {
-    /**Metoda wypełnia tabele TableRezerw informacjiami zawartymi w tablicy arr
+    /**Metoda wypełnia tabele TableRezerw informacjiami zawartymi w tablicy arr, oraz JListLoty zaweirajaca numery rezewacji
      * @param arr tablica z rekordami otrzymanymi z zapytania zwracającego dane pasażerów danego lotu
      * metoda wywoływana jest w funkcji jButton_allpaxActionPerformed
      */
     public void setTable(ArrayList<String> arr){
+
+        DefaultListModel<String> model1 = new DefaultListModel<>();
+        jListLoty.setModel(model1);
         DefaultTableModel model = (DefaultTableModel) TableRezerw.getModel();
         int j=0;
         for(int i=0;i<arr.size();i+=14){
             model.insertRow(j, new Object[] { arr.get(i),arr.get(i+1),arr.get(i+2),arr.get(i+3),arr.get(i+4),arr.get(i+5),arr.get(i+6),arr.get(i+7),arr.get(i+8),arr.get(i+9),arr.get(i+10),arr.get(i+11),arr.get(i+12),arr.get(i+13) });
+            model1.addElement(arr.get(i));
             j++;
         }
     }
@@ -40,6 +51,9 @@ public class Manage extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         TableRezerw = new javax.swing.JTable();
+        button_usun = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jListLoty = new javax.swing.JList<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -75,25 +89,37 @@ public class Manage extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID Rezerw", "Nick", "Imie", "Nazwisko", "Kraj", "Miasto", "ID Lotu", "Skad", "Dokąd ", "Data        ", "Godzina   ", "Cena", "Linia", "Miejsce"
+                "ID Rezerw", "Nick", "Imie", "Nazwisko", "Kraj", "Miasto", "ID Lotu", "Skad", "Dokąd", "Data", "Godzina", "Cena", "Linia", "Miejsce"
             }
         ));
         TableRezerw.setEnabled(false);
         jScrollPane1.setViewportView(TableRezerw);
         if (TableRezerw.getColumnModel().getColumnCount() > 0) {
-            TableRezerw.getColumnModel().getColumn(0).setResizable(false);
-            TableRezerw.getColumnModel().getColumn(2).setResizable(false);
-            TableRezerw.getColumnModel().getColumn(4).setResizable(false);
-            TableRezerw.getColumnModel().getColumn(5).setResizable(false);
-            TableRezerw.getColumnModel().getColumn(6).setResizable(false);
-            TableRezerw.getColumnModel().getColumn(7).setResizable(false);
-            TableRezerw.getColumnModel().getColumn(8).setResizable(false);
-            TableRezerw.getColumnModel().getColumn(9).setResizable(false);
-            TableRezerw.getColumnModel().getColumn(10).setResizable(false);
-            TableRezerw.getColumnModel().getColumn(11).setResizable(false);
-            TableRezerw.getColumnModel().getColumn(12).setResizable(false);
-            TableRezerw.getColumnModel().getColumn(13).setResizable(false);
+            TableRezerw.getColumnModel().getColumn(0).setResizable(true);
+            TableRezerw.getColumnModel().getColumn(2).setResizable(true);
+            TableRezerw.getColumnModel().getColumn(4).setResizable(true);
+            TableRezerw.getColumnModel().getColumn(5).setResizable(true);
+            TableRezerw.getColumnModel().getColumn(6).setResizable(true);
+            TableRezerw.getColumnModel().getColumn(7).setResizable(true);
+            TableRezerw.getColumnModel().getColumn(8).setResizable(true);
+            TableRezerw.getColumnModel().getColumn(9).setResizable(true);
+            TableRezerw.getColumnModel().getColumn(10).setResizable(true);
+            TableRezerw.getColumnModel().getColumn(11).setResizable(true);
+            TableRezerw.getColumnModel().getColumn(12).setResizable(true);
+            TableRezerw.getColumnModel().getColumn(13).setResizable(true);
         }
+
+        button_usun.setBackground(new java.awt.Color(126, 175, 229));
+        button_usun.setText("Usuń lot");
+        button_usun.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_usunActionPerformed(evt);
+            }
+        });
+
+        jListLoty.setBackground(new java.awt.Color(141, 140, 154));
+        jListLoty.setSelectedIndex(1);
+        jScrollPane3.setViewportView(jListLoty);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -103,13 +129,23 @@ public class Manage extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 856, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(20, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(button_usun, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
+                .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(127, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 149, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(button_usun, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -129,6 +165,38 @@ public class Manage extends javax.swing.JFrame {
 
         pack();
     }
+    private void button_usunActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        String lot = jListLoty.getSelectedValue();
+       if(lot!=null){
+           PreparedStatement ps;
+           ResultSet rs;
+           String query = "select * from usun_rezerwacje(?);";
+           
+     
+           try {
+               ps=ConnectionDB.getConnect().prepareStatement(query);
+               ps.setInt(1, Integer.parseInt(lot));
+               
+               rs = ps.executeQuery();
+               while(rs.next()){
+                   if(rs.getInt(1)>0){
+                       JOptionPane.showMessageDialog(null, "rezerwacja została usunięta"); 
+                       this.dispose();
+                   }
+                   else{
+                       JOptionPane.showMessageDialog(null, "Błąd podczas usuwania"); 
+                   }
+               
+               }
+           } catch (SQLException ex) {
+               Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+           }
+           
+       }
+       else{
+       JOptionPane.showMessageDialog(null, "Wybierz rezerwacje do usunięcia");
+       }
+   }             
 
 
 
@@ -139,5 +207,8 @@ public class Manage extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton button_usun;
+    private javax.swing.JList<String> jListLoty;
+    private javax.swing.JScrollPane jScrollPane3;
     //koniec deklaracji zmiennych
 }
